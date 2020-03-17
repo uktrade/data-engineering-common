@@ -14,7 +14,8 @@ class Config():
         if bool(int(os.environ.get('USE_DOTENV', '0'))):
             # Load environment variables from .env file, this does not
             # override existing System environment variables
-            load_dotenv(override=False)
+            env_path = Path('.') / '.env'
+            load_dotenv(dotenv_path=env_path)
         default = self._get_config_from_file('defaults.yml')
         self._parse_env_vars(default)
         local = self._get_local_config()
