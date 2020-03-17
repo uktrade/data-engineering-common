@@ -7,8 +7,7 @@ import yaml
 from dotenv import load_dotenv
 
 
-class Config():
-
+class Config:
     def __init__(self, directory):
         self.directory = directory
         if bool(int(os.environ.get('USE_DOTENV', '0'))):

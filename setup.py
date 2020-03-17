@@ -6,7 +6,5 @@ setup(
     name='data-engineering-common',
     version='1.0',
     package_dir={'': 'src'},
-    install_requires=[
-        'python-dotenv>=0.12.0'
-    ]
+    install_requires=['python-dotenv>=0.12.0'],
 )
