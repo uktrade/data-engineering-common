@@ -4,8 +4,9 @@ import logging
 
 import numpy
 import pytest
-from common.api import settings
 from freezegun import freeze_time
+
+from common.api import settings
 
 
 @pytest.mark.parametrize(

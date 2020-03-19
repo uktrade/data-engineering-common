@@ -39,7 +39,9 @@ def _create_base_app():
     try:
         from app.application import config_location
     except ImportError:
-        config_location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__), 'config'))
+        config_location = os.path.realpath(
+            os.path.join(os.getcwd(), os.path.dirname(__file__), 'config')
+        )
 
     flask_app.config.update(config.Config(config_location).all())
 
