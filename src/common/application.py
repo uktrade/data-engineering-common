@@ -6,11 +6,9 @@ import redis
 from flask import Flask, json
 from sqlalchemy.engine.url import make_url
 
-from app.api.settings import CustomJSONEncoder
-from app.application import config_location
-from app.commands.dev import cmd_group as dev_cmd
-from app.db.dbi import DBI
 from common import config
+from common.api.settings import CustomJSONEncoder
+from common.views import healthcheck
 
 logging_config = {
     'version': 1,
@@ -18,7 +16,7 @@ logging_config = {
     'root': {'level': 'INFO', 'handlers': ['console'], 'formatter': 'json'},
     'formatters': {
         'verbose': {'format': '[%(levelname)s] [%(name)s] %(message)s'},
-        'json': {'()': 'app.api.settings.JSONLogFormatter'},
+        'json': {'()': 'common.api.settings.JSONLogFormatter'},
     },
     'handlers': {
         'console': {'level': 'DEBUG', 'class': 'logging.StreamHandler', 'formatter': 'json'}
@@ -38,8 +36,19 @@ def get_or_create():
 
 def _create_base_app():
     flask_app = Flask(__name__)
+    try:
+        from app.application import config_location
+    except ImportError:
+        config_location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__), 'config'))
+
     flask_app.config.update(config.Config(config_location).all())
-    flask_app.cli.add_command(dev_cmd)
+
+    try:
+        from app.commands.dev import cmd_group as dev_cmd
+    except ImportError:
+        pass
+    else:
+        flask_app.cli.add_command(dev_cmd)
 
     flask_app.config.update(
         {
@@ -73,7 +82,8 @@ def make_current_app_test_app(test_db_name):
 
 def _register_components(flask_app):
     # Postgres DB
-    from app.db import sql_alchemy
+    from common.db.models import sql_alchemy
+    from common.db.dbi import DBI
 
     sql_alchemy.session = sql_alchemy.create_scoped_session()
     sql_alchemy.init_app(flask_app)
@@ -81,10 +91,16 @@ def _register_components(flask_app):
     flask_app.dbi = DBI(sql_alchemy)
 
     # Routes
-    from app.api import routes
+    try:
+        from app.api import routes
+    except ImportError:
+        pass
+    else:
+        for rule, view_func in routes.RULES:
+            flask_app.add_url_rule(rule, view_func=view_func)
 
-    for rule, view_func in routes.RULES:
-        flask_app.add_url_rule(rule, view_func=view_func)
+    # Healthcheck
+    flask_app.add_url_rule('/healthcheck/', view_func=healthcheck),
 
     # Cache
     redis_uri = _get_redis_url(flask_app)

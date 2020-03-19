@@ -1,5 +1,5 @@
 [flake8]
-application-import-names=app,authentication,common,data_report,db,etl,tests,utils
+application-import-names=app,common
 application-package-names=authbroker_client
 exclude =
     venv,
