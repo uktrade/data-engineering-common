@@ -4,7 +4,7 @@ import pytest
 from mohawk import Sender
 from mohawk.util import utc_now
 
-from common.db.models import HawkUsers
+from data_engineering.common.db.models import HawkUsers
 
 
 class TestAuthentication:

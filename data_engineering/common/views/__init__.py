@@ -5,8 +5,8 @@ from flask import current_app as flask_app
 from flask import jsonify, make_response
 from werkzeug.exceptions import BadRequest, NotFound, Unauthorized
 
-from common.api.access_control import AccessControl
-from common.db.models import HawkUsers
+from data_engineering.common.api.access_control import AccessControl
+from data_engineering.common.db.models import HawkUsers
 
 ac = AccessControl()
 

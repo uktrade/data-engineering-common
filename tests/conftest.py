@@ -1,2 +1,2 @@
 # flake8: noqa
-from common.tests.conftest import *
+from data_engineering.common.tests.conftest import *

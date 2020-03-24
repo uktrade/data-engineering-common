@@ -6,9 +6,9 @@ import redis
 from flask import Flask, json
 from sqlalchemy.engine.url import make_url
 
-from common import config
-from common.api.settings import CustomJSONEncoder
-from common.views import healthcheck
+from data_engineering.common import config
+from data_engineering.common.api.settings import CustomJSONEncoder
+from data_engineering.common.views import healthcheck
 
 logging_config = {
     'version': 1,
@@ -16,7 +16,7 @@ logging_config = {
     'root': {'level': 'INFO', 'handlers': ['console'], 'formatter': 'json'},
     'formatters': {
         'verbose': {'format': '[%(levelname)s] [%(name)s] %(message)s'},
-        'json': {'()': 'common.api.settings.JSONLogFormatter'},
+        'json': {'()': 'data_engineering.common.api.settings.JSONLogFormatter'},
     },
     'handlers': {
         'console': {'level': 'DEBUG', 'class': 'logging.StreamHandler', 'formatter': 'json'}
@@ -84,8 +84,8 @@ def make_current_app_test_app(test_db_name):
 
 def _register_components(flask_app):
     # Postgres DB
-    from common.db.models import sql_alchemy
-    from common.db.dbi import DBI
+    from data_engineering.common.db.models import sql_alchemy
+    from data_engineering.common.db.dbi import DBI
 
     sql_alchemy.session = sql_alchemy.create_scoped_session()
     sql_alchemy.init_app(flask_app)

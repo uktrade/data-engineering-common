@@ -4,9 +4,9 @@ import pytest
 import sqlalchemy_utils
 from flask import make_response
 
-from common import application
-from common.db.models import HawkUsers
-from common.views import ac, json_error
+from data_engineering.common import application
+from data_engineering.common.db.models import HawkUsers
+from data_engineering.common.views import ac, json_error
 
 TESTING_DB_NAME_TEMPLATE = 'dss_test_{}'
 

@@ -6,7 +6,7 @@ import numpy
 import pytest
 from freezegun import freeze_time
 
-from common.api import settings
+from data_engineering.common.api import settings
 
 
 @pytest.mark.parametrize(

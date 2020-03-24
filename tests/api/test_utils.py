@@ -3,7 +3,7 @@ import unittest.mock
 
 import pandas as pd
 
-from common.api import utils
+from data_engineering.common.api import utils
 
 
 class TestToCamelCase(unittest.TestCase):
@@ -33,13 +33,13 @@ class TestToCamelCase(unittest.TestCase):
 
 
 class TestToWebDict(unittest.TestCase):
-    @unittest.mock.patch('common.api.utils.to_records_web_dict')
+    @unittest.mock.patch('data_engineering.common.api.utils.to_records_web_dict')
     def test_if_record_orientation(self, to_records_web_dict):
         df = unittest.mock.Mock()
         utils.to_web_dict(df, orient='records')
         to_records_web_dict.assert_called_once_with(df)
 
-    @unittest.mock.patch('common.api.utils.to_tabular_web_dict')
+    @unittest.mock.patch('data_engineering.common.api.utils.to_tabular_web_dict')
     def test_if_tabular_orientation(self, to_tabular_web_dict):
         df = unittest.mock.Mock()
         utils.to_web_dict(df, orient='tabular')
@@ -62,7 +62,7 @@ class TestToRecordsWebDict(unittest.TestCase):
 
 
 class TestToTabularWebDict(unittest.TestCase):
-    @unittest.mock.patch('common.api.utils.to_camel_case')
+    @unittest.mock.patch('data_engineering.common.api.utils.to_camel_case')
     def test(self, to_camel_case):
         df = unittest.mock.Mock(columns=['a', 'b', 'c'])
         df.values.tolist.return_value = [[0, 1, 2], [3, 4, 5]]
@@ -73,7 +73,7 @@ class TestToTabularWebDict(unittest.TestCase):
         }
         self.assertEqual(output, expected)
 
-    @unittest.mock.patch('common.api.utils.to_camel_case')
+    @unittest.mock.patch('data_engineering.common.api.utils.to_camel_case')
     def test_when_dataframe_has_only_one_column_make_values_a_list_not_of_list_of_lists(
         self, to_camel_case
     ):
