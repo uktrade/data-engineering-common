@@ -6,6 +6,12 @@ from data_engineering.common.api.utils import to_web_dict
 
 
 class PaginatedListView(View):
+    def get_fields(self):
+        return self.get_field_types_from_column_types(self.pipeline._l1_data_column_types)
+
+    def get_field_types_from_column_types(self, column_types):
+        return [field for field, _ in column_types]
+
     def dispatch_request(self):
         orientation = request.args.get('orientation', 'tabular')
         pagination_size = flask_app.config['app']['pagination_size']
@@ -19,9 +25,7 @@ class PaginatedListView(View):
             values = [next_id]
 
         sql_query = f'''
-            select id, {','.join(
-                [field for field, _ in self.pipeline._l1_data_column_types]
-            )}
+            select id, {','.join(self.get_fields())}
             from {self.model.get_fq_table_name()}
             {where}
             order by id
