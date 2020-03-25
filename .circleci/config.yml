@@ -1,0 +1,79 @@
+version: 2.1
+
+job_defaults: &job_defaults
+  parameters:
+    python_image:
+      type: string
+
+    postgres_image:
+      type: string
+
+    publish_coverage:
+      type: boolean
+      default: false
+
+  environment:
+    FLASK_ENV: test
+    DATABASE_URL: postgresql://postgres@localhost/
+    CACHE_PORT: 6375
+    CACHE_HOST: redis://0.0.0.0
+
+  working_directory: ~/app
+
+  docker:
+    - image: <<parameters.python_image>>
+
+    - image: <<parameters.postgres_image>>
+
+  steps:
+    - checkout
+    - restore_cache:
+         name: Restore pip cache
+         keys:
+           - common-<< parameters.python_image >>-{{ checksum "setup.py" }}
+         paths:
+           - ~/cache/pip
+
+    - run:
+        name: Install dependencies
+        command: python setup.py develop -a -d ~/cache/pip
+
+    - save_cache:
+        name: Save pip cache
+        key: common-<< parameters.python_image >>-{{ checksum "setup.py" }}
+        paths:
+          - ~/cache/pip
+
+    - run:
+        name: Run format checks
+        command: |
+          make check
+
+    - run:
+        name: Run tests
+        command: |
+          make run_tests COV='--cov=. --cov-report=html'
+
+    - when:
+        condition: <<parameters.publish_coverage>>
+        steps:
+          - run:
+              name: Publish coverage
+              command: |
+                wget -O codecov.sh https://codecov.io/bash
+                bash ./codecov.sh -t ${COV_TOKEN}
+
+
+jobs:
+  build:
+    <<: *job_defaults
+
+workflows:
+  version: 2
+
+  Default build:
+    jobs:
+      - build:
+          publish_coverage: true
+          python_image: python:3.6.8
+          postgres_image: postgres:10.5
