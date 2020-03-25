@@ -36,13 +36,17 @@ job_defaults: &job_defaults
 
     - run:
         name: Install dependencies
-        command: python setup.py develop -a -d ~/cache/pip
+        command: python setup.py develop --user -a -d ~/cache/pip
 
     - save_cache:
         name: Save pip cache
         key: common-<< parameters.python_image >>-{{ checksum "setup.py" }}
         paths:
           - ~/cache/pip
+    
+    - run:
+        name: Add local bin to path 
+        command: echo 'export PATH=$HOME/.local/bin/:$PATH' >> $BASH_ENV 
 
     - run:
         name: Run format checks
