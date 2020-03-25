@@ -7,10 +7,7 @@ from data_engineering.common.api.utils import to_web_dict
 
 class PaginatedListView(View):
     def get_fields(self):
-        return self.get_field_types_from_column_types(self.pipeline._l1_data_column_types)
-
-    def get_field_types_from_column_types(self, column_types):
-        return [field for field, _ in column_types]
+        raise NotImplementedError
 
     def dispatch_request(self):
         orientation = request.args.get('orientation', 'tabular')
