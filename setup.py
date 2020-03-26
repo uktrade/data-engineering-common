@@ -16,7 +16,7 @@ setup(
         'mohawk>=1.1.0',
         'numpy>=1.*',
         'pandas>=1.0.2',
-        'psycopg2==2.7.7',
+        'psycopg2==2.8.4',
         'pytest>=5.4.1',
         'pytest-cov>=2.8.1',
         'python-dotenv>=0.12.0',
