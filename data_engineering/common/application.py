@@ -45,6 +45,10 @@ def _create_base_app():
 
     flask_app.config.update(config.Config(config_location).all())
 
+    db_uri = _load_uri_from_vcap_services('postgres')
+    if not db_uri:
+        db_uri = flask_app.config['app']['database_url']
+
     try:
         from app.commands.dev import cmd_group as dev_cmd
     except ImportError:
@@ -55,9 +59,7 @@ def _create_base_app():
     flask_app.config.update(
         {
             'TESTING': False,
-            'SQLALCHEMY_DATABASE_URI': _create_sql_alchemy_connection_str(
-                flask_app.config['app']['database_url']
-            ),
+            'SQLALCHEMY_DATABASE_URI': _create_sql_alchemy_connection_str(db_uri),
             # set SQLALCHEMY_TRACK_MODIFICATIONS to False because
             # default of None produces warnings, and track modifications
             # are not required
