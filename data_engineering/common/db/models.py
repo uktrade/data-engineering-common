@@ -1,11 +1,14 @@
 import pandas as pd
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import DDL, event
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import load_only
 from sqlalchemy.sql import ClauseElement
 
 db = SQLAlchemy()
 sql_alchemy = db
+
+Base = declarative_base()
 
 # aliases
 _sa = sql_alchemy
@@ -23,7 +26,7 @@ _float = _sa.Float
 _decimal = _num
 
 
-class BaseModel(db.Model):
+class BaseModel(Base):
     __abstract__ = True
 
     def save(self):
