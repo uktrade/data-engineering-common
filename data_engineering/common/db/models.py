@@ -82,10 +82,10 @@ class BaseModel(Base):
 
     @classmethod
     def get_dataframe(cls, columns=None):
-        query = cls.query
+        query = _sa.session.query(cls)
         if columns:
             query = query.options(load_only(*columns))
-        return pd.read_sql(query.statement, cls.query.session.bind, index_col=cls.id.description)
+        return pd.read_sql(query.statement, query.session.bind, index_col=cls.id.description)
 
 
 def create_schemas(*args, **kwargs):
