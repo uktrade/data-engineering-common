@@ -37,7 +37,7 @@ class TestAuthentication:
             description=self.description,
         )
         yield
-        HawkUsers.query.delete()
+        app_with_db.db.session.query(HawkUsers).delete()
         app_with_db.config = original_config
 
     def test_successful_authentication(self):

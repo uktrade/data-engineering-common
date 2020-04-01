@@ -5,7 +5,7 @@ import sqlalchemy_utils
 from flask import make_response
 
 from data_engineering.common import application
-from data_engineering.common.db.models import HawkUsers
+from data_engineering.common.db.models import HawkUsers, Base
 from data_engineering.common.views import ac, json_error
 
 TESTING_DB_NAME_TEMPLATE = 'dss_test_{}'
@@ -44,6 +44,7 @@ def app_with_db(app):
     yield app
     app.db.session.close()
     app.db.session.remove()
+    Base.metadata.drop_all(app.db.engine)
     sqlalchemy_utils.drop_database(app.config['SQLALCHEMY_DATABASE_URI'])
 
 
@@ -56,6 +57,7 @@ def app_with_db_module(app):
     yield app
     app.db.session.close()
     app.db.session.remove()
+    Base.metadata.drop_all(app.db.engine)
     sqlalchemy_utils.drop_database(app.config['SQLALCHEMY_DATABASE_URI'])
 
 
@@ -125,4 +127,4 @@ def _create_current_time_str():
 
 
 def create_tables(app):
-    app.db.create_all()
+    Base.metadata.create_all(app.db.engine)
