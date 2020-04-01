@@ -5,7 +5,7 @@ import sqlalchemy_utils
 from flask import make_response
 
 from data_engineering.common import application
-from data_engineering.common.db.models import HawkUsers, Base
+from data_engineering.common.db.models import Base, HawkUsers
 from data_engineering.common.views import ac, json_error
 
 TESTING_DB_NAME_TEMPLATE = 'dss_test_{}'

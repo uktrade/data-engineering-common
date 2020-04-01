@@ -142,3 +142,5 @@ cython_debug/
 media
 static
 
+# user / local configuration
+data_engineering/common/config/local.yml
