@@ -35,11 +35,18 @@ def test_client(app):
         yield test_client
 
 
+def create_database(app):
+    url = app.config['SQLALCHEMY_DATABASE_URI']
+    if sqlalchemy_utils.database_exists(url):
+        sqlalchemy_utils.drop_database(url)
+    sqlalchemy_utils.create_database(url)
+
+
 @pytest.fixture(scope='function')
 def app_with_db(app):
     app.db.session.close_all()
     app.db.engine.dispose()
-    sqlalchemy_utils.create_database(app.config['SQLALCHEMY_DATABASE_URI'])
+    create_database(app)
     create_tables(app)
     yield app
     app.db.session.close()
