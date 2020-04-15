@@ -1,7 +1,7 @@
 import pandas as pd
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import DDL, event
-from sqlalchemy.orm import load_only
+from sqlalchemy.orm import load_only, relationship
 from sqlalchemy.sql import ClauseElement
 
 db = SQLAlchemy()
@@ -21,6 +21,9 @@ _date = _sa.Date
 _enum = _sa.Enum
 _float = _sa.Float
 _decimal = _num
+_table = db.Table
+_foreign_key = db.ForeignKey
+_relationship = relationship
 
 
 class BaseModel(db.Model):
