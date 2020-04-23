@@ -17,12 +17,24 @@ except ImportError:
 __all__ = ('AccessControl',)
 
 
+def convert_errors_to_unauthorized(f):
+
+    @wraps(f)
+    def wrapped_f(func):
+        try:
+            return func(f)
+        except LookupError:
+            raise Unauthorized()
+    return wrapped_f
+
+
 class AccessControl:
     def __init__(self):
         self._client_key_loader_func = None
         self._nonce_checker_func = None
         self._client_scope_loader_func = None
 
+    @convert_errors_to_unauthorized
     def client_key_loader(self, f):
         """ Function to be called to find a client key.
 
@@ -120,6 +132,7 @@ class AccessControl:
         except KeyError:
             raise BadRequest()
 
+    @convert_errors_to_unauthorized
     def client_scope_loader(self, f):
         """ Function to be called to find a client scope.
 
