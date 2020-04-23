@@ -1,6 +1,6 @@
 import pandas as pd
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import DDL, event
+from sqlalchemy import CheckConstraint, DDL, event
 from sqlalchemy.orm import load_only, relationship
 from sqlalchemy.sql import ClauseElement
 
@@ -24,6 +24,7 @@ _decimal = _num
 _table = db.Table
 _foreign_key = db.ForeignKey
 _relationship = relationship
+_check = CheckConstraint
 
 
 class BaseModel(db.Model):
