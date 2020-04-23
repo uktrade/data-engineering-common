@@ -17,24 +17,12 @@ except ImportError:
 __all__ = ('AccessControl',)
 
 
-def convert_errors_to_unauthorized(f):
-
-    @wraps(f)
-    def wrapped_f(*args, **kwargs):
-        try:
-            return f(*args, **kwargs)
-        except LookupError:
-            raise Unauthorized()
-    return wrapped_f
-
-
 class AccessControl:
     def __init__(self):
         self._client_key_loader_func = None
         self._nonce_checker_func = None
         self._client_scope_loader_func = None
 
-    @convert_errors_to_unauthorized
     def client_key_loader(self, f):
         """ Function to be called to find a client key.
 
@@ -132,7 +120,6 @@ class AccessControl:
         except KeyError:
             raise BadRequest()
 
-    @convert_errors_to_unauthorized
     def client_scope_loader(self, f):
         """ Function to be called to find a client scope.
 
@@ -164,10 +151,14 @@ class AccessControl:
                     id = attributes['id']
                 except (AttributeError, KeyError):
                     raise Unauthorized('Invalid authorization header.')
-                scopes = self._client_scope_loader_func(id)
-                if '*' in scopes or view_func.__name__ in scopes:
-                    return view_func(*args, **kwargs)
-                raise Unauthorized('Invalid authorization scope.')
+                try:
+                    scopes = self._client_scope_loader_func(id)
+                except LookupError:
+                    raise Unauthorized()
+                else:
+                    if '*' in scopes or view_func.__name__ in scopes:
+                        return view_func(*args, **kwargs)
+                    raise Unauthorized('Invalid authorization scope.')
             else:
                 return view_func(*args, **kwargs)
 
