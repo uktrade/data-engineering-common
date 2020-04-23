@@ -20,9 +20,9 @@ __all__ = ('AccessControl',)
 def convert_errors_to_unauthorized(f):
 
     @wraps(f)
-    def wrapped_f(func):
+    def wrapped_f():
         try:
-            return func(f)
+            return f()
         except LookupError:
             raise Unauthorized()
     return wrapped_f
