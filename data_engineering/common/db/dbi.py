@@ -195,6 +195,27 @@ class DBI:
         """
         self.execute_statement(stmt)
 
+    def create_index(self, index, table_name, index_name=None):
+        index_name = index_name if index_name else '{}_index'.format(table_name)
+        index_str = '(' + ','.join(index) + ')'
+        sql = f'create index if not exists {index_name} on {table_name} {index_str}'
+        self.execute_statement(sql, data=index)
+
+    def insert_data(self, df, table_name):
+        if len(df):
+            sql = '''
+                insert into {table_name} ({columns})
+                values ({values}) on conflict do nothing
+            '''.format(
+                table_name=table_name,
+                columns=','.join(df.columns),
+                values=','.join(['%s' for i in range(len(df.columns))]),
+            )
+            for col in df.columns:
+                if df[col].dtype == '<M8[ns]':
+                    df[col] = df[col].map(lambda x: None if pd.isnull(x) else x.isoformat())
+            self.execute_statement(sql, df.values.tolist(), raise_if_fail=True)
+
     def schema_exists(self, name):
         stmt = f"""
           SELECT schema_name

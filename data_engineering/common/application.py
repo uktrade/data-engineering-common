@@ -50,11 +50,12 @@ def _create_base_app():
         db_uri = flask_app.config['app']['database_url']
 
     try:
-        from app.commands.dev import cmd_group as dev_cmd
+        from app.commands import get_command_groups
     except ImportError:
         pass
     else:
-        flask_app.cli.add_command(dev_cmd)
+        for cmd_group in get_command_groups():
+            flask_app.cli.add_command(cmd_group)
 
     flask_app.config.update(
         {
