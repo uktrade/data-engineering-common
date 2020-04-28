@@ -1,7 +1,7 @@
 from functools import wraps
 
 import redis
-from flask import current_app as flask_app
+from flask import current_app as flask_app, request
 from flask import jsonify, make_response
 from werkzeug.exceptions import BadRequest, NotFound, Unauthorized
 
@@ -64,6 +64,15 @@ def json_error(f):
         return response
 
     return error_handler
+
+
+def response_orientation_decorator(view):
+    @wraps(view)
+    def wrapper(*args, **kwargs):
+        orientation = request.args.get('orientation', 'tabular')
+        return view(orientation, *args, **kwargs)
+
+    return wrapper
 
 
 def healthcheck():
