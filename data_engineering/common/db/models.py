@@ -1,6 +1,7 @@
 import pandas as pd
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import CheckConstraint, DDL, event
+from sqlalchemy import CheckConstraint, DDL, event, UniqueConstraint
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import load_only, relationship
 from sqlalchemy.sql import ClauseElement
 
@@ -21,10 +22,12 @@ _date = _sa.Date
 _enum = _sa.Enum
 _float = _sa.Float
 _decimal = _num
+_uuid = UUID
 _table = db.Table
 _foreign_key = db.ForeignKey
 _relationship = relationship
 _check = CheckConstraint
+_unique = UniqueConstraint
 
 
 class BaseModel(db.Model):
