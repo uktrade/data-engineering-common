@@ -107,7 +107,7 @@ def app_with_mock_cache(app):
     if app_has_cache:
         original_cache = app
     app.cache = CacheMock()
-    yield
+    yield app
     if app_has_cache:
         app.cache = original_cache
     else:
