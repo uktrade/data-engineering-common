@@ -8,6 +8,7 @@ from sqlalchemy.engine.url import make_url
 
 from data_engineering.common import config
 from data_engineering.common.api.settings import CustomJSONEncoder
+from data_engineering.common.commands.generic import cmd_group as generic_cmd
 from data_engineering.common.views import healthcheck
 
 logging_config = {
@@ -48,6 +49,8 @@ def _create_base_app():
     db_uri = _load_uri_from_vcap_services('postgres')
     if not db_uri:
         db_uri = flask_app.config['app']['database_url']
+
+    flask_app.cli.add_command(generic_cmd)
 
     try:
         from app.commands import get_command_groups
