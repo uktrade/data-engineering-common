@@ -203,14 +203,11 @@ class DBI:
 
     def insert_data(self, df, table_name):
         if len(df):
-            sql = '''
-                insert into {table_name} ({columns})
-                values ({values}) on conflict do nothing
-            '''.format(
-                table_name=table_name,
-                columns=','.join(df.columns),
-                values=','.join(['%s' for i in range(len(df.columns))]),
-            )
+            sql = f'''
+                insert into {table_name} ({','.join(df.columns)})
+                values ({','.join(['%s' for i in range(len(df.columns))])})
+                on conflict do nothing
+            '''
             for col in df.columns:
                 if df[col].dtype == '<M8[ns]':
                     df[col] = df[col].map(lambda x: None if pd.isnull(x) else x.isoformat())
