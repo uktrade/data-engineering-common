@@ -23,21 +23,22 @@ POST = 'POST'
     '--method', type=click.Choice([GET, POST]), help='HTTP method',
 )
 @click.option(
-    '--query',
-    type=str,
-    help="Query either a json record for a POST request or a query string " "for a GET request",
+    '--post_data', type=str, help="Post data in json format",
 )
-def hawk_api_request(url, client_id, client_key, method, query):
+@click.option(
+    '--query_params', type=str, help="Query parameters to be added to url",
+)
+def hawk_api_request(url, client_id, client_key, method, post_data, query_params):
     """
     Make an API Request to a Hawk protected endpoint
     """
     if not any([url, client_id, client_key, method]):
         print_help()
     elif method == GET:
-        process_get_request(url, client_id, client_key, query)
+        process_get_request(url, client_id, client_key, query_params)
     else:
-        if is_query_valid(query):
-            process_post_request(url, client_id, client_key, query)
+        if is_post_data_valid(post_data):
+            process_post_request(url, client_id, client_key, post_data, query_params)
         else:
             print_help()
 
@@ -47,33 +48,40 @@ def print_help():
     click.echo(ctx.get_help())
 
 
-def is_query_valid(query):
-    if not query:
-        click.echo('\nQuery required for post request\n')
+def is_post_data_valid(post_data):
+    if not post_data:
+        click.echo('\nPost data is required to make a POST request\n')
         return False
     try:
-        json.loads(query)
+        json.loads(post_data)
     except json.decoder.JSONDecodeError:
-        click.echo('\nInvalid json record for post request\n')
+        click.echo('\nInvalid json record for post data\n')
         return False
     return True
 
 
+def append_query_params_to_url(url, query_params):
+    if not query_params:
+        return url
+
+    prefix = ''
+    if '?' not in url:
+        prefix = '?'
+    return f'{url}{prefix}{query_params}'
+
+
 def process_get_request(url, client_id, client_key, query):
-    if query:
-        url = f'{url}?{query}'
-        query = ''
-
-    sender = get_sender(url, GET, client_id, client_key, query)
-    response = requests.get(url, headers={'Authorization': sender.request_header},)
-
+    url = append_query_params_to_url(url, query)
+    sender = get_sender(url, GET, client_id, client_key, '')
+    response = requests.get(url, headers={'Authorization': sender.request_header})
     display_response(response)
 
 
-def process_post_request(url, client_id, client_key, query):
-    sender = get_sender(url, POST, client_id, client_key, query)
+def process_post_request(url, client_id, client_key, post_data, query_params):
+    url = append_query_params_to_url(url, query_params)
+    sender = get_sender(url, POST, client_id, client_key, post_data)
     response = requests.post(
-        url, headers={'Authorization': sender.request_header}, json=json.loads(query),
+        url, headers={'Authorization': sender.request_header}, json=json.loads(post_data),
     )
     display_response(response)
 
