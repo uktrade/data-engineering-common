@@ -46,6 +46,22 @@ def _create_base_app():
 
     flask_app.config.update(config.Config(config_location).all())
 
+    try:
+        from app.application import template_location
+    except ImportError:
+        template_location = os.path.realpath(
+            os.path.join(os.getcwd(), os.path.dirname(__file__), 'templates')
+        )
+    flask_app.template_folder = template_location
+
+    try:
+        from app.application import static_location
+    except ImportError:
+        static_location = os.path.realpath(
+            os.path.join(os.getcwd(), os.path.dirname(__file__), 'static')
+        )
+    flask_app.static_folder = static_location
+
     db_uri = _load_uri_from_vcap_services('postgres')
     if not db_uri:
         db_uri = flask_app.config['app']['database_url']
