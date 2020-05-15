@@ -6,7 +6,10 @@ from data_engineering.common.api.utils import to_web_dict
 
 
 class PaginatedListView(View):
-    def get_fields(self):
+    def get_select_clause(self):
+        raise NotImplementedError
+
+    def get_from_clause(self):
         raise NotImplementedError
 
     def dispatch_request(self):
@@ -14,22 +17,22 @@ class PaginatedListView(View):
         pagination_size = flask_app.config['app']['pagination_size']
         next_id = request.args.get('next-id')
 
-        where = ''
-        values = []
+        pagination_clause = ''
+        pagination_values = []
 
         if next_id is not None:
-            where = 'where id >= %s'
-            values = [next_id]
+            pagination_clause = 'where id >= %s'
+            pagination_values = [next_id]
 
         sql_query = f'''
-            select id, {','.join(self.get_fields())}
-            from {self.model.get_fq_table_name()}
-            {where}
+            select id, {self.get_select_clause()}
+            from {self.get_from_clause()}
+            {pagination_clause}
             order by id
             limit {pagination_size} + 1
         '''
 
-        df = flask_app.dbi.execute_query(sql_query, data=values, df=True)
+        df = flask_app.dbi.execute_query(sql_query, data=pagination_values, df=True)
         if len(df) == pagination_size + 1:
             next_ = '{}{}?'.format(request.host_url[:-1], request.path)
             next_ += 'orientation={}'.format(orientation)
