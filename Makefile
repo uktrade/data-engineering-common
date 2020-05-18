@@ -5,7 +5,7 @@ CHECK ?= --check
 
 .PHONY: run_tests
 run_tests:
-	TESTING=1 pytest -p no:sugar ${TEST} ${COV}
+	USE_DOTENV=1 TESTING=1 pytest -p no:sugar ${TEST} ${COV}
 
 check: flake8 black
 
