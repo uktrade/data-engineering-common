@@ -3,7 +3,7 @@ from functools import wraps
 import redis
 from flask import current_app as flask_app, request
 from flask import jsonify, make_response
-from werkzeug.exceptions import BadRequest, NotFound, Unauthorized
+from werkzeug.exceptions import BadRequest, NotFound, Unauthorized, UnprocessableEntity
 
 from data_engineering.common.api.access_control import AccessControl
 from data_engineering.common.db.models import HawkUsers
@@ -56,6 +56,9 @@ def json_error(f):
         except BadRequest as e:
             response = jsonify({'error': e.description})
             response.status_code = 400
+        except UnprocessableEntity as e:
+            response = jsonify({'error': e.description})
+            response.status_code = 422
         except Unauthorized:
             response = make_response('', 401)
         except Exception as e:
