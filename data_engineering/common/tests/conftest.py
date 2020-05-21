@@ -1,4 +1,5 @@
 import datetime
+import unittest
 
 import pytest
 import sqlalchemy_utils
@@ -8,7 +9,7 @@ from data_engineering.common import application
 from data_engineering.common.db.models import HawkUsers
 from data_engineering.common.views import ac, json_error
 
-TESTING_DB_NAME_TEMPLATE = 'dss_test_{}'
+TESTING_DB_NAME_TEMPLATE = 'test_{}'
 
 
 @json_error
@@ -112,6 +113,15 @@ def app_with_mock_cache(app):
         app.cache = original_cache
     else:
         del app.cache
+
+
+@pytest.fixture(scope="function")
+def sso_authenticated_request():
+    with unittest.mock.patch(
+        'data_engineering.common.sso.token.is_authenticated'
+    ) as mock_is_authenticated:
+        mock_is_authenticated.return_value = True
+        yield
 
 
 def _create_testing_db_name():
