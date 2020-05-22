@@ -96,7 +96,7 @@ def create_schemas(*args, **kwargs):
     try:
         from app.db.models import get_schemas
     except ImportError:
-        schemas = []
+        schemas = ['admin']
     else:
         schemas = get_schemas()
 
