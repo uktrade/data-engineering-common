@@ -37,6 +37,10 @@ class BaseModel(db.Model):
         _sa.session.add(self)
         _sa.session.commit()
 
+    def delete(self):
+        _sa.session.delete(self)
+        _sa.session.commit()
+
     @classmethod
     def create_table(cls):
         db.metadata.create_all(bind=db.engine, tables=[cls.__table__], checkfirst=True)
