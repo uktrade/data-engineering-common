@@ -6,6 +6,10 @@ from data_engineering.common.api.utils import to_web_dict
 
 
 class PaginatedListView(View):
+
+    camel_case_columns = True
+    include_id_column = False
+
     def get_select_clause(self):
         raise NotImplementedError
 
@@ -40,6 +44,7 @@ class PaginatedListView(View):
             df = df[:-1]
         else:
             next_ = None
-        web_dict = to_web_dict(df.iloc[:, 1:], orientation)
+        df = df if self.include_id_column else df.iloc[:, 1:]
+        web_dict = to_web_dict(df, orientation, self.camel_case_columns)
         web_dict['next'] = next_
         return flask_app.make_response(web_dict)
