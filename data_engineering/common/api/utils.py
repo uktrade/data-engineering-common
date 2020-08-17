@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def to_camel_case(word):
     word = word.lstrip('_').rstrip('_')
     index = 1
@@ -15,6 +18,7 @@ def to_camel_case(word):
 
 
 def to_web_dict(df, orient='records', camel_case=True):
+    df = df.replace({np.nan: None})
     if orient == 'records':
         return to_records_web_dict(df, camel_case)
     elif orient == 'tabular':

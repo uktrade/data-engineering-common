@@ -38,13 +38,13 @@ class TestToWebDict(unittest.TestCase):
     def test_if_record_orientation(self, to_records_web_dict):
         df = unittest.mock.Mock()
         utils.to_web_dict(df, orient='records')
-        to_records_web_dict.assert_called_once_with(df, True)
+        to_records_web_dict.assert_called_once()
 
     @unittest.mock.patch('data_engineering.common.api.utils.to_tabular_web_dict')
     def test_if_tabular_orientation(self, to_tabular_web_dict):
         df = unittest.mock.Mock()
         utils.to_web_dict(df, orient='tabular')
-        to_tabular_web_dict.assert_called_once_with(df, True)
+        to_tabular_web_dict.assert_called_once()
 
     def test_invalid_input(self):
         df = unittest.mock.Mock()
