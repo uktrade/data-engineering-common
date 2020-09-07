@@ -38,7 +38,7 @@ class DBI:
 
     @classmethod
     def to_fully_qualified(cls, table, schema=None):
-        """ Intelligently cast args to fully qualified table name.
+        """Intelligently cast args to fully qualified table name.
 
         This is a "do what I mean" command and thus should handle
         various inputs in an intelligent way. The aim of this method
@@ -71,7 +71,7 @@ class DBI:
 
     @classmethod
     def quote(cls, name):
-        """ Quote a name according to postgres quoting rules.
+        """Quote a name according to postgres quoting rules.
 
         If the name seems to already be quoted, this returns name unchanged.
         """
@@ -81,7 +81,7 @@ class DBI:
 
     @classmethod
     def unquote(cls, name):
-        """ Unquote a name according to postgres quoting rules.
+        """Unquote a name according to postgres quoting rules.
 
         If the name seems to be already unquoted, this returns name unchanged.
         """
@@ -101,7 +101,7 @@ class DBI:
         df.to_sql(name=table, con=self.db.engine, schema=schema, if_exists='append')
 
     def df_to_table_bulk(self, df, fq_table_name, columns=None):
-        """ bulk insert dataframe (2.5 times faster then df_to_table)
+        """bulk insert dataframe (2.5 times faster then df_to_table)
 
         :param df: dataframe to insert. The index will be ignored.
         :param fq_table_name: fully qualified table name ("schema"."table")

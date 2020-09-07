@@ -13,20 +13,30 @@ POST = 'POST'
 @click.command('hawk_api_request')
 @with_appcontext
 @click.option(
-    '--url', type=str, help='Url endpoint to query',
+    '--url',
+    type=str,
+    help='Url endpoint to query',
 )
 @click.option('--client_id', type=str, help="The hawk id for the endpoint")
 @click.option(
-    '--client_key', type=str, help="The hawk secret key for the endpoint",
+    '--client_key',
+    type=str,
+    help="The hawk secret key for the endpoint",
 )
 @click.option(
-    '--method', type=click.Choice([GET, POST]), help='HTTP method',
+    '--method',
+    type=click.Choice([GET, POST]),
+    help='HTTP method',
 )
 @click.option(
-    '--post_data', type=str, help="Post data in json format",
+    '--post_data',
+    type=str,
+    help="Post data in json format",
 )
 @click.option(
-    '--query_params', type=str, help="Query parameters to be added to url",
+    '--query_params',
+    type=str,
+    help="Query parameters to be added to url",
 )
 def hawk_api_request(url, client_id, client_key, method, post_data, query_params):
     """
@@ -81,7 +91,9 @@ def process_post_request(url, client_id, client_key, post_data, query_params):
     url = append_query_params_to_url(url, query_params)
     sender = get_sender(url, POST, client_id, client_key, post_data)
     response = requests.post(
-        url, headers={'Authorization': sender.request_header}, json=json.loads(post_data),
+        url,
+        headers={'Authorization': sender.request_header},
+        json=json.loads(post_data),
     )
     display_response(response)
 
