@@ -24,7 +24,7 @@ class AccessControl:
         self._client_scope_loader_func = None
 
     def client_key_loader(self, f):
-        """ Function to be called to find a client key.
+        """Function to be called to find a client key.
 
         :param f: The callback for retrieving a client key.
 
@@ -43,7 +43,7 @@ class AccessControl:
         return wrapped_f
 
     def nonce_checker(self, f):
-        """ Registers a function to be called to check a nonce.
+        """Registers a function to be called to check a nonce.
 
         Function you set has to take a sender_id, nonce, timestamp and return a bool::
 
@@ -59,7 +59,7 @@ class AccessControl:
         return wrapped_f
 
     def authentication_required(self, view_func):
-        """ Decorator that provides an access to view function for
+        """Decorator that provides an access to view function for
         authenticated users only.
         """
 
@@ -121,7 +121,7 @@ class AccessControl:
             raise BadRequest()
 
     def client_scope_loader(self, f):
-        """ Function to be called to find a client scope.
+        """Function to be called to find a client scope.
 
         :param f: The callback for retrieving a client scope.
 
@@ -136,7 +136,7 @@ class AccessControl:
         return wrapped_f
 
     def authorization_required(self, view_func):
-        """ Decorator that provides access to view function for authorized users only.
+        """Decorator that provides access to view function for authorized users only.
         i.e the endpoint needs to be part of the issuer access scope.
         """
 

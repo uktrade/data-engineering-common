@@ -19,9 +19,7 @@ class Config:
         self._parse_env_vars(default)
         local = self._get_local_config()
         self._parse_env_vars(local)
-        config_dict = self._update_dict(default, local)
-        docker = self._get_docker_config()
-        self.store = self._update_dict(config_dict, docker)
+        self.store = self._update_dict(default, local)
 
     def __getitem__(self, key):
         return self.store[key]
@@ -43,12 +41,6 @@ class Config:
         else:
             file_name = 'local.yml'
         return self._get_config_from_file(file_name, check_if_exists=True)
-
-    def _get_docker_config(self):
-        is_using_docker = bool(int(os.environ.get('DOCKER', '0')))
-        if not is_using_docker:
-            return {}
-        return self._get_config_from_file('docker.yml', check_if_exists=True)
 
     def _update_dict(self, dest, source):
         for k, v in source.items():
