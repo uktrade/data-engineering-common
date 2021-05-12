@@ -169,5 +169,5 @@ def _load_uri_from_vcap_services(service_type):
 def _create_sql_alchemy_connection_str(cfg, db_name=None):
     url = make_url(cfg)
     if db_name:
-        url.database = db_name
+        url = url.set(database=db_name)
     return url
