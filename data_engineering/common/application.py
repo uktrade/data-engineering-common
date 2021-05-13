@@ -1,4 +1,5 @@
 import os
+import re
 from logging.config import dictConfig
 
 import certifi
@@ -62,7 +63,7 @@ def _create_base_app():
         )
     flask_app.static_folder = static_location
 
-    db_uri = _load_uri_from_vcap_services('postgres')
+    db_uri = re.sub(r'^postgres:', 'postgresql:', _load_uri_from_vcap_services('postgres') or '')
     if not db_uri:
         db_uri = flask_app.config['app']['database_url']
 
