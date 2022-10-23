@@ -3,7 +3,7 @@ import unittest.mock
 from urllib.error import URLError
 
 import pytest
-from flask_oauthlib.client import OAuthException
+from authlib.integrations.flask_client import OAuthError
 from werkzeug.exceptions import HTTPException
 
 import data_engineering.common.sso.token as token
@@ -75,7 +75,7 @@ class TestIsAuthenticated:
         from flask import current_app as flask_app
 
         flask_app.sso_client = unittest.mock.Mock()
-        handled_exceptions = [URLError('e'), OAuthException('e'), HTTPException('e')]
+        handled_exceptions = [URLError('e'), OAuthError('e'), HTTPException('e')]
         flask_app.sso_client.get_profile.side_effect = handled_exceptions
         for e in handled_exceptions:
             response = token.is_authenticated()
