@@ -4,6 +4,7 @@ import unittest.mock
 import pandas as pd
 
 from data_engineering.common.api import utils
+from data_engineering.common.application import get_or_create
 from data_engineering.common.views import response_orientation_decorator
 
 
@@ -89,14 +90,13 @@ class TestToTabularWebDict(unittest.TestCase):
 
 
 class TestResponseOrientationDecorator(unittest.TestCase):
-    @unittest.mock.patch('data_engineering.common.views.request')
-    def test(self, request):
-        request.args.get.return_value = 'your orientation'
+    def test(self):
         view = unittest.mock.Mock(__name__='asdf')
         wrapped = response_orientation_decorator(view)
 
         self.assertEqual(wrapped.__name__, 'asdf')
 
-        wrapped()
-        request.args.get.assert_called_once_with('orientation', 'tabular')
+        with get_or_create().test_request_context('/?orientation=your%20orientation'):
+            wrapped()
+
         view.assert_called_once_with('your orientation')
