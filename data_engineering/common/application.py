@@ -110,7 +110,6 @@ def _register_components(flask_app):
     from data_engineering.common.db.models import sql_alchemy
     from data_engineering.common.db.dbi import DBI
 
-    sql_alchemy.session = sql_alchemy.create_scoped_session()
     sql_alchemy.init_app(flask_app)
     flask_app.db = sql_alchemy
     flask_app.dbi = DBI(sql_alchemy)

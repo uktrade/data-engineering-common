@@ -7,6 +7,7 @@ from flask_oauthlib.client import OAuthException
 from werkzeug.exceptions import HTTPException
 
 import data_engineering.common.sso.token as token
+from data_engineering.common.application import get_or_create
 
 
 @pytest.fixture
@@ -48,17 +49,17 @@ class TestLoginRequired:
 
     @unittest.mock.patch('data_engineering.common.sso.token.is_authenticated')
     @unittest.mock.patch('data_engineering.common.sso.token.redirect')
-    @unittest.mock.patch('data_engineering.common.sso.token.request')
     @unittest.mock.patch('data_engineering.common.sso.token.url_for')
-    def test_if_not_authenticated_redirect(self, url_for, request, redirect, is_authenticated):
+    def test_if_not_authenticated_redirect(self, url_for, redirect, is_authenticated):
         is_authenticated.return_value = False
 
         def view():
             return "view"
 
-        wrapped_view = token.login_required(view)
-        response = wrapped_view()
-        redirect.assert_called_once()
+        with get_or_create().test_request_context('/?orientation=your%20orientation'):
+            wrapped_view = token.login_required(view)
+            response = wrapped_view()
+            redirect.assert_called_once()
         print('response:', response)
 
 
