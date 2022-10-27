@@ -12,7 +12,7 @@ setup(
         'flake8-import-order>=0.18.1',
         'flake8>=3.7.9',
         'flask<3.0.0',
-        'flask-oauthlib>=0.9.5',
+        'authlib>=1.1.0',
         'flask-security-too>=5.0.2',
         'flask-sqlalchemy>=3.0.2',
         'freezegun>=0.3.15',
