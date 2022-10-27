@@ -4,6 +4,7 @@ setup(
     name='data-engineering-common',
     version='1.2.6',
     packages=find_packages(exclude=['tests.*', 'tests']),
+    include_package_data=True,
     install_requires=[
         'black>=19.10b0',
         'certifi>=2019.11.28',
