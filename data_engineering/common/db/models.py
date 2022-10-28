@@ -93,7 +93,7 @@ class BaseModel(db.Model):
         query = cls.query
         if columns:
             query = query.options(load_only(*columns))
-        return pd.read_sql(query.statement, cls.query.session.bind, index_col=cls.id.description)
+        return pd.read_sql(query.statement, db.engine, index_col=cls.id.description)
 
 
 def create_schemas(*args, **kwargs):
