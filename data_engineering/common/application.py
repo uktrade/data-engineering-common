@@ -28,15 +28,15 @@ logging_config = {
 dictConfig(logging_config)
 
 
-def get_or_create():
+def get_or_create(config_overrides=()):
     from flask import current_app as flask_app
 
     if flask_app:
         return flask_app
-    return _create_base_app()
+    return _create_base_app(config_overrides)
 
 
-def _create_base_app():
+def _create_base_app(config_overrides=()):
     flask_app = Flask(__name__)
     try:
         from app.application import config_location
@@ -89,20 +89,25 @@ def _create_base_app():
     )
     flask_app.json_encoder = CustomJSONEncoder
     flask_app.secret_key = flask_app.config['app']['secret_key']
+
+    for config_override in config_overrides:
+        flask_app.config = config_override(flask_app.config)
+
     return _register_components(flask_app)
 
 
 def make_current_app_test_app(test_db_name):
-    flask_app = get_or_create()
-    flask_app.config.update(
-        {
-            'TESTING': True,
-            'SQLALCHEMY_DATABASE_URI': _create_sql_alchemy_connection_str(
-                flask_app.config['app']['database_url'], test_db_name
-            ),
-        }
+    return get_or_create(
+        (
+            lambda config: {
+                **config,
+                'TESTING': True,
+                'SQLALCHEMY_DATABASE_URI': _create_sql_alchemy_connection_str(
+                    config['app']['database_url'], test_db_name
+                ),
+            },
+        )
     )
-    return flask_app
 
 
 def _register_components(flask_app):
