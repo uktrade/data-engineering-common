@@ -11,7 +11,7 @@ from flask import current_app as flask_app
 from sqlalchemy import DDL
 from sqlalchemy_utils import functions as sa_functions
 
-TableID = namedtuple('TableID', 'schema table')
+TableID = namedtuple("TableID", "schema table")
 
 
 class DBI:
@@ -29,12 +29,16 @@ class DBI:
 
     @classmethod
     def parse_fully_qualified(cls, name):
-        match = re.fullmatch(r'"(?P<schema>[a-zA-Z0-9_.]+)"\."(?P<table>[a-zA-Z0-9_.]+)"', name)
+        match = re.fullmatch(
+            r'"(?P<schema>[a-zA-Z0-9_.]+)"\."(?P<table>[a-zA-Z0-9_.]+)"', name
+        )
         if not match:
-            raise ValueError(f'the supplied name ({name}) does not appear' ' to be well formed')
+            raise ValueError(
+                f"the supplied name ({name}) does not appear" " to be well formed"
+            )
 
         groupdict = match.groupdict()
-        return TableID(groupdict['schema'], groupdict['table'])
+        return TableID(groupdict["schema"], groupdict["table"])
 
     @classmethod
     def to_fully_qualified(cls, table, schema=None):
@@ -55,12 +59,12 @@ class DBI:
                 table_id = cls.parse_fully_qualified(table)
             except ValueError as e:
                 raise ValueError(
-                    f'table ({table}) appears to be malformed' f'\ncaused by error: {e}'
+                    f"table ({table}) appears to be malformed" f"\ncaused by error: {e}"
                 )
             if table_id.schema != cls.unquote(schema):
                 raise ValueError(
-                    f'table ({table}) already has a schema, and '
-                    'the supplied schema ({schema}) does not match'
+                    f"table ({table}) already has a schema, and "
+                    "the supplied schema ({schema}) does not match"
                 )
             table_uq = table_id.table
             schema_uq = table_id.schema
@@ -98,7 +102,7 @@ class DBI:
         self.db.engine.dispose()
 
     def df_to_table(self, df, schema, table):
-        df.to_sql(name=table, con=self.db.engine, schema=schema, if_exists='append')
+        df.to_sql(name=table, con=self.db.engine, schema=schema, if_exists="append")
 
     def df_to_table_bulk(self, df, fq_table_name, columns=None):
         """bulk insert dataframe (2.5 times faster then df_to_table)
@@ -113,18 +117,18 @@ class DBI:
         output = StringIO()
         df.to_csv(
             output,
-            sep='\t',
+            sep="\t",
             header=False,
             index=False,
-            na_rep='None',
-            encoding='utf-8',
+            na_rep="None",
+            encoding="utf-8",
             quoting=csv.QUOTE_NONE,
-            quotechar='',
-            escapechar='\\',
+            quotechar="",
+            escapechar="\\",
             columns=columns,
         )
         output.seek(0)
-        cur.copy_from(output, fq_table_name, null='None', sep='\t', columns=columns)
+        cur.copy_from(output, fq_table_name, null="None", sep="\t", columns=columns)
         connection.commit()
         cur.close()
 
@@ -133,15 +137,15 @@ class DBI:
         self.execute_statement(stmt)
 
     def drop_table(self, fq_name):
-        stmt = 'DROP TABLE IF EXISTS {} CASCADE'.format(fq_name)
+        stmt = "DROP TABLE IF EXISTS {} CASCADE".format(fq_name)
         self.execute_statement(stmt)
 
     def drop_materialized_view(self, fq_name):
-        stmt = 'DROP MATERIALIZED VIEW IF EXISTS {} CASCADE'.format(fq_name)
+        stmt = "DROP MATERIALIZED VIEW IF EXISTS {} CASCADE".format(fq_name)
         self.execute_statement(stmt)
 
     def drop_sequence(self, fq_name):
-        stmt = 'DROP SEQUENCE IF EXISTS {} CASCADE'.format(fq_name)
+        stmt = "DROP SEQUENCE IF EXISTS {} CASCADE".format(fq_name)
         self.execute_statement(stmt)
 
     def append_table(self, source_table, target_table, drop_source=True):
@@ -173,7 +177,9 @@ class DBI:
             transaction.rollback()
             flask_app.logger.error("Execute statement error:")
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
+            traceback.print_exception(
+                exc_type, exc_value, exc_traceback, file=sys.stdout
+            )
             if raise_if_fail:
                 raise err
             connection.close()
@@ -196,21 +202,23 @@ class DBI:
         self.execute_statement(stmt)
 
     def create_index(self, index, table_name, index_name=None):
-        index_name = index_name if index_name else '{}_index'.format(table_name)
-        index_str = '(' + ','.join(index) + ')'
-        sql = f'create index if not exists {index_name} on {table_name} {index_str}'
+        index_name = index_name if index_name else "{}_index".format(table_name)
+        index_str = "(" + ",".join(index) + ")"
+        sql = f"create index if not exists {index_name} on {table_name} {index_str}"
         self.execute_statement(sql, data=index)
 
     def insert_data(self, df, table_name):
         if len(df):
-            sql = f'''
+            sql = f"""
                 insert into {table_name} ({','.join(df.columns)})
                 values ({','.join(['%s' for i in range(len(df.columns))])})
                 on conflict do nothing
-            '''
+            """
             for col in df.columns:
-                if df[col].dtype == '<M8[ns]':
-                    df[col] = df[col].map(lambda x: None if pd.isnull(x) else x.isoformat())
+                if df[col].dtype == "<M8[ns]":
+                    df[col] = df[col].map(
+                        lambda x: None if pd.isnull(x) else x.isoformat()
+                    )
             self.execute_statement(sql, df.values.tolist(), raise_if_fail=True)
 
     def schema_exists(self, name):
@@ -229,8 +237,8 @@ class DBI:
         fq_table_name,
         columns,
         has_header=False,
-        null='',
-        sep='\t',
+        null="",
+        sep="\t",
         quote=None,
         encoding=None,
     ):
@@ -245,24 +253,28 @@ class DBI:
         except sqlalchemy.exc.ProgrammingError:
             flask_app.logger.error("DSV to table error:")
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
+            traceback.print_exception(
+                exc_type, exc_value, exc_traceback, file=sys.stdout
+            )
         cursor.close()
         connection.close()
 
     @staticmethod
-    def _get_sql_copy_statement(table, columns, has_header, delimiter, null_value, quote, encoding):
-        sql = 'COPY {}'.format(table)
+    def _get_sql_copy_statement(
+        table, columns, has_header, delimiter, null_value, quote, encoding
+    ):
+        sql = "COPY {}".format(table)
         if columns:
-            sql += ' ({})'.format(','.join(columns))
-        sql += ' FROM STDIN WITH CSV'
+            sql += " ({})".format(",".join(columns))
+        sql += " FROM STDIN WITH CSV"
         if has_header:
-            sql += ' HEADER'
+            sql += " HEADER"
         if delimiter:
             sql += " DELIMITER E'{}'".format(delimiter)
         if null_value:
             sql += " null as '{}'".format(null_value)
         if quote:
-            sql += " QUOTE \'{}\'".format(quote)
+            sql += " QUOTE '{}'".format(quote)
         if encoding:
             sql += f" ENCODING '{encoding}'"
         return sql

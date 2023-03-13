@@ -14,7 +14,7 @@ try:
 except ImportError:
     pass
 
-__all__ = ('AccessControl',)
+__all__ = ("AccessControl",)
 
 
 class AccessControl:
@@ -34,9 +34,9 @@ class AccessControl:
         def wrapped_f(client_id):
             client_key = f(client_id)
             return {
-                'id': client_id,
-                'key': client_key,
-                'algorithm': current_app.config['access_control']['hawk_algorithm'],
+                "id": client_id,
+                "key": client_key,
+                "algorithm": current_app.config["access_control"]["hawk_algorithm"],
             }
 
         self._client_key_loader_func = wrapped_f
@@ -65,14 +65,16 @@ class AccessControl:
 
         @wraps(view_func)
         def wrapped_view_func(*args, **kwargs):
-            hawk_enabled = current_app.config['access_control']['hawk_enabled']
-            hawk_response_header = current_app.config['access_control']['hawk_response_header']
+            hawk_enabled = current_app.config["access_control"]["hawk_enabled"]
+            hawk_response_header = current_app.config["access_control"][
+                "hawk_response_header"
+            ]
 
             if hawk_enabled:
                 receiver = self._auth_by_signature()
             response = view_func(*args, **kwargs)
             if hawk_enabled and hawk_response_header:
-                response.headers['Server-Authorization'] = receiver.respond(
+                response.headers["Server-Authorization"] = receiver.respond(
                     content=response.get_data(), content_type=response.mimetype
                 )
             return response
@@ -81,29 +83,29 @@ class AccessControl:
 
     def _auth_by_signature(self):
         if self._client_key_loader_func is None:
-            raise RuntimeError('Client key loader function was not defined')
-        if 'Authorization' not in request.headers:
+            raise RuntimeError("Client key loader function was not defined")
+        if "Authorization" not in request.headers:
             raise Unauthorized()
 
         try:
             return mohawk.Receiver(
                 credentials_map=self._client_key_loader_func,
                 seen_nonce=self._nonce_checker_func
-                if current_app.config['access_control']['hawk_nonce_enabled']
+                if current_app.config["access_control"]["hawk_nonce_enabled"]
                 else None,
-                request_header=request.headers['Authorization'],
+                request_header=request.headers["Authorization"],
                 url=request.url,
                 method=request.method,
                 content=request.get_data(),
                 content_type=request.mimetype,
-                accept_untrusted_content=current_app.config['access_control'][
-                    'hawk_accept_untrusted_content'
+                accept_untrusted_content=current_app.config["access_control"][
+                    "hawk_accept_untrusted_content"
                 ],
-                localtime_offset_in_seconds=current_app.config['access_control'][
-                    'hawk_localtime_offset_in_seconds'
+                localtime_offset_in_seconds=current_app.config["access_control"][
+                    "hawk_localtime_offset_in_seconds"
                 ],
-                timestamp_skew_in_seconds=current_app.config['access_control'][
-                    'hawk_timestamp_skew_in_seconds'
+                timestamp_skew_in_seconds=current_app.config["access_control"][
+                    "hawk_timestamp_skew_in_seconds"
                 ],
             )
         except mohawk.exc.MacMismatch:
@@ -142,19 +144,19 @@ class AccessControl:
 
         @wraps(view_func)
         def handler(*args, **kwargs):
-            if current_app.config['access_control']['hawk_enabled']:
+            if current_app.config["access_control"]["hawk_enabled"]:
                 if self._client_scope_loader_func is None:
-                    raise RuntimeError('Client scope loader function was not defined')
+                    raise RuntimeError("Client scope loader function was not defined")
                 try:
-                    authorization_header = request.headers['Authorization']
+                    authorization_header = request.headers["Authorization"]
                     attributes = parse_authorization_header(authorization_header)
-                    id = attributes['id']
+                    id = attributes["id"]
                 except (AttributeError, KeyError):
-                    raise Unauthorized('Invalid authorization header.')
+                    raise Unauthorized("Invalid authorization header.")
                 scopes = self._client_scope_loader_func(id)
-                if '*' in scopes or view_func.__name__ in scopes:
+                if "*" in scopes or view_func.__name__ in scopes:
                     return view_func(*args, **kwargs)
-                raise Unauthorized('Invalid authorization scope.')
+                raise Unauthorized("Invalid authorization scope.")
             else:
                 return view_func(*args, **kwargs)
 

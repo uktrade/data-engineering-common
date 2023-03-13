@@ -10,35 +10,39 @@ from data_engineering.common.sso.register import register_sso_component
 def mock_app():
     app = unittest.mock.Mock()
     app.config = {
-        'sso': {
-            'base_url': 'base_url',
-            'access_token_path': 'acces_token_path',
-            'authorize_path': 'authorize_path',
-            'profile_path': 'profile_path',
-            'logout_path': 'logout_path',
-            'client_id': 'client_id',
-            'client_secret': 'client_secret',
+        "sso": {
+            "base_url": "base_url",
+            "access_token_path": "acces_token_path",
+            "authorize_path": "authorize_path",
+            "profile_path": "profile_path",
+            "logout_path": "logout_path",
+            "client_id": "client_id",
+            "client_secret": "client_secret",
         },
-        'session': {'secret_key': 'shhh'},
+        "session": {"secret_key": "shhh"},
     }
     return app
 
 
 @pytest.fixture
 def mock_role_based_client():
-    with unittest.mock.patch('data_engineering.common.sso.register.SSORoleBasedClient') as mock:
+    with unittest.mock.patch(
+        "data_engineering.common.sso.register.SSORoleBasedClient"
+    ) as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_token_client():
-    with unittest.mock.patch('data_engineering.common.sso.register.SSOTokenClient') as mock:
+    with unittest.mock.patch(
+        "data_engineering.common.sso.register.SSOTokenClient"
+    ) as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_security():
-    with unittest.mock.patch('data_engineering.common.sso.register.Security') as mock:
+    with unittest.mock.patch("data_engineering.common.sso.register.Security") as mock:
         yield mock
 
 

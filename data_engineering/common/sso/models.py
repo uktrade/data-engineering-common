@@ -12,17 +12,17 @@ from data_engineering.common.db.models import (
 
 
 class UserRole(BaseModel):
-    __tablename__ = 'users_roles'
-    __table_args__ = {'schema': 'admin'}
+    __tablename__ = "users_roles"
+    __table_args__ = {"schema": "admin"}
 
     id = _col(_int(), primary_key=True, autoincrement=True)
-    user_id = _col(_int(), db.ForeignKey('admin.users.id'))
-    role_id = _col(_int(), db.ForeignKey('admin.roles.id'))
+    user_id = _col(_int(), db.ForeignKey("admin.users.id"))
+    role_id = _col(_int(), db.ForeignKey("admin.roles.id"))
 
 
 class Role(BaseModel, RoleMixin):
-    __tablename__ = 'roles'
-    __table_args__ = {'schema': 'admin'}
+    __tablename__ = "roles"
+    __table_args__ = {"schema": "admin"}
 
     id = _col(_int(), primary_key=True, autoincrement=True)
     name = _col(_text(), unique=True)
@@ -33,8 +33,8 @@ class Role(BaseModel, RoleMixin):
 
 
 class User(BaseModel, UserMixin):
-    __tablename__ = 'users'
-    __table_args__ = {'schema': 'admin'}
+    __tablename__ = "users"
+    __table_args__ = {"schema": "admin"}
 
     id = _col(_int(), primary_key=True)
     user_id = _col(_text(), unique=True)
@@ -50,9 +50,9 @@ class User(BaseModel, UserMixin):
     login_count = _col(_int())
 
     roles = db.relationship(
-        'Role',
-        secondary='admin.users_roles',
-        backref='users',
+        "Role",
+        secondary="admin.users_roles",
+        backref="users",
     )
 
     def __str__(self):

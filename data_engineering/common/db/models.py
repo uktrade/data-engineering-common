@@ -56,10 +56,10 @@ class BaseModel(db.Model):
 
     @classmethod
     def get_schema(cls):
-        if 'schema' in cls.__table_args__:
-            return cls.__table_args__['schema']
+        if "schema" in cls.__table_args__:
+            return cls.__table_args__["schema"]
         else:
-            return 'public'
+            return "public"
 
     @classmethod
     def get_fq_table_name(cls):
@@ -82,7 +82,9 @@ class BaseModel(db.Model):
         if instance:
             return instance, False
         else:
-            params = dict((k, v) for k, v in kwargs.items() if not isinstance(v, ClauseElement))
+            params = dict(
+                (k, v) for k, v in kwargs.items() if not isinstance(v, ClauseElement)
+            )
             params.update(defaults or {})
             instance = cls(**params)
             instance.save()
@@ -100,7 +102,7 @@ def create_schemas(*args, **kwargs):
     try:
         from app.db.models import get_schemas
     except ImportError:
-        schemas = ['admin']
+        schemas = ["admin"]
     else:
         schemas = get_schemas()
 
@@ -110,13 +112,12 @@ def create_schemas(*args, **kwargs):
     _sa.session.commit()
 
 
-event.listen(BaseModel.metadata, 'before_create', create_schemas)
+event.listen(BaseModel.metadata, "before_create", create_schemas)
 
 
 class HawkUsers(BaseModel):
-
-    __tablename__ = 'hawk_users'
-    __table_args__ = {'schema': 'public'}
+    __tablename__ = "hawk_users"
+    __table_args__ = {"schema": "public"}
 
     id = _col(_text, primary_key=True)
     key = _col(_text)
@@ -139,5 +140,9 @@ class HawkUsers(BaseModel):
     def add_user(cls, client_id, client_key, client_scope, description):
         cls.get_or_create(
             id=client_id,
-            defaults={'key': client_key, 'scope': client_scope, 'description': description},
+            defaults={
+                "key": client_key,
+                "scope": client_scope,
+                "description": description,
+            },
         )

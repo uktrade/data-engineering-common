@@ -10,12 +10,12 @@ from dotenv import load_dotenv
 class Config:
     def __init__(self, directory):
         self.directory = directory
-        if bool(int(os.environ.get('USE_DOTENV', '0'))):
+        if bool(int(os.environ.get("USE_DOTENV", "0"))):
             # Load environment variables from .env file, this does not
             # override existing System environment variables
-            env_path = Path('.') / '.env'
+            env_path = Path(".") / ".env"
             load_dotenv(dotenv_path=env_path)
-        default = self._get_config_from_file('defaults.yml')
+        default = self._get_config_from_file("defaults.yml")
         self._parse_env_vars(default)
         local = self._get_local_config()
         self._parse_env_vars(local)
@@ -35,11 +35,11 @@ class Config:
         return {}
 
     def _get_local_config(self):
-        is_testing = bool(int(os.environ.get('TESTING', '0')))
+        is_testing = bool(int(os.environ.get("TESTING", "0")))
         if is_testing:
-            file_name = 'local_testing.yml'
+            file_name = "local_testing.yml"
         else:
-            file_name = 'local.yml'
+            file_name = "local.yml"
         return self._get_config_from_file(file_name, check_if_exists=True)
 
     def _update_dict(self, dest, source):
@@ -67,7 +67,7 @@ class Config:
                     value = os.getenv(env_var, default)
                     if value.isdigit():
                         value = int(value)
-                    elif value in ['True', 'False']:
-                        value = value == 'True'
+                    elif value in ["True", "False"]:
+                        value = value == "True"
                     config[k] = value
         return config

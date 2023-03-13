@@ -27,11 +27,11 @@ class CustomJSONEncoder(JSONEncoder):
 
 class JSONLogFormatter(json_log_formatter.JSONFormatter):
     def json_record(self, message, extra, record):
-        extra['message'] = message
-        if 'time' not in extra:
-            extra['time'] = datetime.datetime.now()
-        extra['level'] = record.levelname
+        extra["message"] = message
+        if "time" not in extra:
+            extra["time"] = datetime.datetime.now()
+        extra["level"] = record.levelname
         if record.levelno >= logging.ERROR:
-            extra['lineno'] = record.lineno
-            extra['filename'] = record.pathname
+            extra["lineno"] = record.lineno
+            extra["filename"] = record.pathname
         return extra

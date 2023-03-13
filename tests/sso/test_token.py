@@ -13,16 +13,16 @@ from data_engineering.common.application import get_or_create
 @pytest.fixture
 def sso_client(app):
     kwargs = {
-        'access_token_url': 'access_token_url',
-        'app': app,
-        'authorize_url': 'authorize_url',
-        'client_id': 'client_id',
-        'client_secret': 'client_secret',
-        'logout_url': 'logout_url',
-        'profile_url': 'profile_url',
-        'sso_session_token_key': 'sso_session_token_key',
-        'sso_url': 'sso_url',
-        'user_datastore': 'user_datastore',
+        "access_token_url": "access_token_url",
+        "app": app,
+        "authorize_url": "authorize_url",
+        "client_id": "client_id",
+        "client_secret": "client_secret",
+        "logout_url": "logout_url",
+        "profile_url": "profile_url",
+        "sso_session_token_key": "sso_session_token_key",
+        "sso_url": "sso_url",
+        "user_datastore": "user_datastore",
     }
 
     return token.SSOClient(**kwargs)
@@ -47,20 +47,20 @@ class TestLoginRequired:
         wrapped_view = token.login_required(view)
         assert view() == wrapped_view()
 
-    @unittest.mock.patch('data_engineering.common.sso.token.is_authenticated')
-    @unittest.mock.patch('data_engineering.common.sso.token.redirect')
-    @unittest.mock.patch('data_engineering.common.sso.token.url_for')
+    @unittest.mock.patch("data_engineering.common.sso.token.is_authenticated")
+    @unittest.mock.patch("data_engineering.common.sso.token.redirect")
+    @unittest.mock.patch("data_engineering.common.sso.token.url_for")
     def test_if_not_authenticated_redirect(self, url_for, redirect, is_authenticated):
         is_authenticated.return_value = False
 
         def view():
             return "view"
 
-        with get_or_create().test_request_context('/?orientation=your%20orientation'):
+        with get_or_create().test_request_context("/?orientation=your%20orientation"):
             wrapped_view = token.login_required(view)
             response = wrapped_view()
             redirect.assert_called_once()
-        print('response:', response)
+        print("response:", response)
 
 
 class TestIsAuthenticated:
@@ -75,7 +75,7 @@ class TestIsAuthenticated:
         from flask import current_app as flask_app
 
         flask_app.sso_client = unittest.mock.Mock()
-        handled_exceptions = [URLError('e'), OAuthError('e'), HTTPException('e')]
+        handled_exceptions = [URLError("e"), OAuthError("e"), HTTPException("e")]
         flask_app.sso_client.get_profile.side_effect = handled_exceptions
         for e in handled_exceptions:
             response = token.is_authenticated()
@@ -85,6 +85,6 @@ class TestIsAuthenticated:
         from flask import current_app as flask_app
 
         flask_app.sso_client = unittest.mock.Mock()
-        flask_app.sso_client.get_profile.side_effect = Exception('unhandled')
+        flask_app.sso_client.get_profile.side_effect = Exception("unhandled")
         with pytest.raises(Exception):
             token.is_authenticated()

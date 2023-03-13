@@ -31,17 +31,17 @@ def get_client_scope(client_id):
 
 @ac.nonce_checker
 def seen_nonce(sender_id, nonce, timestamp):
-    key = f'{sender_id}:{nonce}:{timestamp}'
+    key = f"{sender_id}:{nonce}:{timestamp}"
     try:
         if flask_app.cache.get(key):
             # We have already processed this nonce + timestamp.
             return True
         else:
             # Save this nonce + timestamp for later.
-            flask_app.cache.set(key, 'True', ex=300)
+            flask_app.cache.set(key, "True", ex=300)
             return False
     except redis.exceptions.ConnectionError as e:
-        flask_app.logger.error(f'failed to connect to caching server: {str(e)}')
+        flask_app.logger.error(f"failed to connect to caching server: {str(e)}")
         return True
 
 
@@ -54,16 +54,16 @@ def json_error(f):
             response = jsonify({})
             response.status_code = 404
         except BadRequest as e:
-            response = jsonify({'error': e.description})
+            response = jsonify({"error": e.description})
             response.status_code = 400
         except UnprocessableEntity as e:
-            response = jsonify({'error': e.description})
+            response = jsonify({"error": e.description})
             response.status_code = 422
         except Unauthorized:
-            response = make_response('', 401)
+            response = make_response("", 401)
         except Exception as e:
-            flask_app.logger.error(f'unexpected exception for API request: {str(e)}')
-            response = make_response('', 500)
+            flask_app.logger.error(f"unexpected exception for API request: {str(e)}")
+            response = make_response("", 500)
         return response
 
     return error_handler
@@ -72,7 +72,7 @@ def json_error(f):
 def response_orientation_decorator(view):
     @wraps(view)
     def wrapper(*args, **kwargs):
-        orientation = request.args.get('orientation', 'tabular')
+        orientation = request.args.get("orientation", "tabular")
         return view(orientation, *args, **kwargs)
 
     return wrapper

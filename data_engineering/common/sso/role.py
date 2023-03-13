@@ -12,16 +12,16 @@ class SSOClient(BaseSSOClient):
         profile = self.get_profile()
 
         # Add/Update user in local DB
-        user = self.user_datastore.get_user(profile['user_id'])
+        user = self.user_datastore.get_user(profile["user_id"])
         if not user:
             self.user_datastore.create_user(
-                first_name=profile['first_name'],
-                last_name=profile['last_name'],
-                email=profile['email'],
-                user_id=profile['user_id'],
+                first_name=profile["first_name"],
+                last_name=profile["last_name"],
+                email=profile["email"],
+                user_id=profile["user_id"],
                 roles=[],
             )
-            user = self.user_datastore.get_user(profile['user_id'])
+            user = self.user_datastore.get_user(profile["user_id"])
         login_user(user)
         self.user_datastore.commit()
 
@@ -33,7 +33,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not is_authenticated():
-            return redirect(url_for('sso.login', next=request.url))
+            return redirect(url_for("sso.login", next=request.url))
 
         return f(*args, **kwargs)
 

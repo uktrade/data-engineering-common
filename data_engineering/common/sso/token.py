@@ -20,7 +20,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not is_authenticated():
-            return redirect(url_for('sso.login', next=request.url))
+            return redirect(url_for("sso.login", next=request.url))
 
         return f(*args, **kwargs)
 
