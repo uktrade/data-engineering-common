@@ -162,21 +162,21 @@ class DBI:
         return rows
 
     def execute_statement(self, stmt, data=None, raise_if_fail=False):
-        connection = self.db.engine.connect()
-        transaction = connection.begin()
-        try:
-            status = connection.execute(stmt, data)
-            transaction.commit()
-            connection.close()
-            return status
-        except sqlalchemy.exc.ProgrammingError as err:
-            transaction.rollback()
-            flask_app.logger.error("Execute statement error:")
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
-            if raise_if_fail:
-                raise err
-            connection.close()
+        with self.db.engine.connect() as connection:
+            with connection.begin() as transaction:
+                try:
+                    status = connection.execute(stmt, data)
+                    transaction.commit()
+                    connection.close()
+                    return status
+                except sqlalchemy.exc.ProgrammingError as err:
+                    transaction.rollback()
+                    flask_app.logger.error("Execute statement error:")
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
+                    if raise_if_fail:
+                        raise err
+                    connection.close()
 
     def recreate_schema(self, name):
         self.drop_schema(name)
