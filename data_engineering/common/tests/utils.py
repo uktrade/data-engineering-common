@@ -13,8 +13,7 @@ def rows_equal_query_results(dbi, expected_rows, query, order_matters=False):
 
     if len(expected_rows) != len(db_rows):
         print(
-            "Number of rows are not equal:"
-            f"{len(expected_rows)} expected, db has {len(db_rows)}"
+            "Number of rows are not equal:" f"{len(expected_rows)} expected, db has {len(db_rows)}"
         )
         return False
 
@@ -55,9 +54,7 @@ def row_to_sortable_tuple(row):
 def assert_dfs_equal_ignore_dtype(df1, df2):
     df1 = _sort_columns(df1)
     df2 = _sort_columns(df2)
-    pd.util.testing.assert_frame_equal(
-        df1, df2, check_dtype=False, check_index_type=False
-    )
+    pd.util.testing.assert_frame_equal(df1, df2, check_dtype=False, check_index_type=False)
 
 
 def _sort_columns(df):

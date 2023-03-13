@@ -29,13 +29,9 @@ class DBI:
 
     @classmethod
     def parse_fully_qualified(cls, name):
-        match = re.fullmatch(
-            r'"(?P<schema>[a-zA-Z0-9_.]+)"\."(?P<table>[a-zA-Z0-9_.]+)"', name
-        )
+        match = re.fullmatch(r'"(?P<schema>[a-zA-Z0-9_.]+)"\."(?P<table>[a-zA-Z0-9_.]+)"', name)
         if not match:
-            raise ValueError(
-                f"the supplied name ({name}) does not appear" " to be well formed"
-            )
+            raise ValueError(f"the supplied name ({name}) does not appear" " to be well formed")
 
         groupdict = match.groupdict()
         return TableID(groupdict["schema"], groupdict["table"])
@@ -177,9 +173,7 @@ class DBI:
             transaction.rollback()
             flask_app.logger.error("Execute statement error:")
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            traceback.print_exception(
-                exc_type, exc_value, exc_traceback, file=sys.stdout
-            )
+            traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
             if raise_if_fail:
                 raise err
             connection.close()
@@ -216,9 +210,7 @@ class DBI:
             """
             for col in df.columns:
                 if df[col].dtype == "<M8[ns]":
-                    df[col] = df[col].map(
-                        lambda x: None if pd.isnull(x) else x.isoformat()
-                    )
+                    df[col] = df[col].map(lambda x: None if pd.isnull(x) else x.isoformat())
             self.execute_statement(sql, df.values.tolist(), raise_if_fail=True)
 
     def schema_exists(self, name):
@@ -253,16 +245,12 @@ class DBI:
         except sqlalchemy.exc.ProgrammingError:
             flask_app.logger.error("DSV to table error:")
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            traceback.print_exception(
-                exc_type, exc_value, exc_traceback, file=sys.stdout
-            )
+            traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stdout)
         cursor.close()
         connection.close()
 
     @staticmethod
-    def _get_sql_copy_statement(
-        table, columns, has_header, delimiter, null_value, quote, encoding
-    ):
+    def _get_sql_copy_statement(table, columns, has_header, delimiter, null_value, quote, encoding):
         sql = "COPY {}".format(table)
         if columns:
             sql += " ({})".format(",".join(columns))

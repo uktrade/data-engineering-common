@@ -26,17 +26,13 @@ def mock_app():
 
 @pytest.fixture
 def mock_role_based_client():
-    with unittest.mock.patch(
-        "data_engineering.common.sso.register.SSORoleBasedClient"
-    ) as mock:
+    with unittest.mock.patch("data_engineering.common.sso.register.SSORoleBasedClient") as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_token_client():
-    with unittest.mock.patch(
-        "data_engineering.common.sso.register.SSOTokenClient"
-    ) as mock:
+    with unittest.mock.patch("data_engineering.common.sso.register.SSOTokenClient") as mock:
         yield mock
 
 

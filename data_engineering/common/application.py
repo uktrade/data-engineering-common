@@ -67,9 +67,7 @@ def _create_base_app(config_overrides=()):
         )
     flask_app.static_folder = static_location
 
-    db_uri = re.sub(
-        r"^postgres:", "postgresql:", _load_uri_from_vcap_services("postgres") or ""
-    )
+    db_uri = re.sub(r"^postgres:", "postgresql:", _load_uri_from_vcap_services("postgres") or "")
     if not db_uri:
         db_uri = flask_app.config["app"]["database_url"]
 
@@ -157,9 +155,7 @@ def _get_redis_url(flask_app):
         redis_uri = (
             f"user:{password}"
             if password
-            else ""
-            f"{flask_app.config['cache']['host']}:"
-            f"{flask_app.config['cache']['port']}"
+            else "" f"{flask_app.config['cache']['host']}:" f"{flask_app.config['cache']['port']}"
         )
     if redis_uri.startswith("rediss://"):
         return f"{redis_uri}?ssl_ca_certs={certifi.where()}"

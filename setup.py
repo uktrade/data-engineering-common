@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="data-engineering-common",
-    version="1.2.6",
+    version="1.2.7",
     packages=find_packages(exclude=["tests.*", "tests"]),
     include_package_data=True,
     install_requires=[
