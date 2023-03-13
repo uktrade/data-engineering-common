@@ -6,7 +6,6 @@ from data_engineering.common.api.utils import to_web_dict
 
 
 class PaginatedListView(View):
-
     camel_case_columns = True
     include_id_column = False
 
