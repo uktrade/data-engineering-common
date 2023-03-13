@@ -105,16 +105,15 @@ def create_schemas(*args, **kwargs):
         schemas = get_schemas()
 
     for schema in schemas:
-        _sa.engine.execute(DDL(f'CREATE SCHEMA IF NOT EXISTS "{schema}"'))
-
-    _sa.session.commit()
+        with _sa.engine.connect() as conn:
+            conn.execute(DDL(f'CREATE SCHEMA IF NOT EXISTS "{schema}"'))
+            conn.commit()
 
 
 event.listen(BaseModel.metadata, 'before_create', create_schemas)
 
 
 class HawkUsers(BaseModel):
-
     __tablename__ = 'hawk_users'
     __table_args__ = {'schema': 'public'}
 
