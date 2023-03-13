@@ -29,7 +29,7 @@ setup(
         'requests>=2.22.0',
         'requests-oauthlib>=1.1.0,<1.2.0',
         'sqlalchemy-utils>=0.36.1',
-        'sqlalchemy<2.0.0',
-        'werkzeug>=0.16.1',
+        'sqlalchemy>=2.0.0',
+        'werkzeug>=2.2.3',
     ],
 )
