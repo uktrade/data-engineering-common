@@ -114,7 +114,6 @@ event.listen(BaseModel.metadata, 'before_create', create_schemas)
 
 
 class HawkUsers(BaseModel):
-
     __tablename__ = 'hawk_users'
     __table_args__ = {'schema': 'public'}
 
