@@ -18,7 +18,7 @@ setup(
         'freezegun>=0.3.15',
         'json-log-formatter>=0.3.0',
         'mohawk>=1.1.0',
-        'numpy>=1.*',
+        'numpy>=1.24.2',
         'pandas>=1.0.2',
         'psycopg2>=2.8.4',
         'pytest>=5.4.1',
