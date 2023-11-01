@@ -79,5 +79,5 @@ workflows:
     jobs:
       - build:
           publish_coverage: true
-          python_image: python:3.9.13
+          python_image: python:3.10.12
           postgres_image: postgres:10.5

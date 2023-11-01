@@ -44,7 +44,7 @@ class Config:
 
     def _update_dict(self, dest, source):
         for k, v in source.items():
-            if isinstance(v, collections.Mapping):
+            if isinstance(v, collections.abc.Mapping):
                 sub_dict = self._update_dict(dest.get(k, {}), v)
                 dest[k] = sub_dict
             else:
@@ -53,7 +53,7 @@ class Config:
 
     def _parse_env_vars(self, config):
         for k, v in config.items():
-            if isinstance(v, collections.Mapping):
+            if isinstance(v, collections.abc.Mapping):
                 self._parse_env_vars(v)
             if isinstance(v, list):
                 for item in v:

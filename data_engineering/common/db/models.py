@@ -1,6 +1,6 @@
 import pandas as pd
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import CheckConstraint, DDL, event, UniqueConstraint
+from sqlalchemy import CheckConstraint, event, text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import load_only, relationship
 from sqlalchemy.sql import ClauseElement
@@ -105,7 +105,8 @@ def create_schemas(*args, **kwargs):
         schemas = get_schemas()
 
     for schema in schemas:
-        _sa.engine.execute(DDL(f'CREATE SCHEMA IF NOT EXISTS "{schema}"'))
+        with _sa.engine.begin() as conn:
+            conn.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{schema}"'))
 
     _sa.session.commit()
 
