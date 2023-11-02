@@ -4,6 +4,7 @@ import unittest
 import pytest
 import sqlalchemy_utils
 from flask import make_response
+from sqlalchemy.orm import close_all_sessions
 
 from data_engineering.common import application
 from data_engineering.common.db.models import HawkUsers
@@ -38,7 +39,7 @@ def test_client(app):
 
 @pytest.fixture(scope='function')
 def app_with_db(app):
-    app.db.session.close_all()
+    close_all_sessions()
     app.db.engine.dispose()
     sqlalchemy_utils.create_database(app.config['SQLALCHEMY_DATABASE_URI'])
     create_tables(app)
@@ -48,9 +49,9 @@ def app_with_db(app):
     sqlalchemy_utils.drop_database(app.config['SQLALCHEMY_DATABASE_URI'])
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def app_with_db_module(app):
-    app.db.session.close_all()
+    close_all_sessions()
     app.db.engine.dispose()
     sqlalchemy_utils.create_database(app.config['SQLALCHEMY_DATABASE_URI'])
     create_tables(app)

@@ -1,14 +1,14 @@
 import datetime
 import decimal
+import json
 import logging
 
 import json_log_formatter
 import numpy as np
 import pandas as pd
-from flask.json import JSONEncoder
 
 
-class CustomJSONEncoder(JSONEncoder):
+class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
