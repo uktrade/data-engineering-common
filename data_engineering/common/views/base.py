@@ -24,8 +24,8 @@ class PaginatedListView(View):
         pagination_values = []
 
         if next_id is not None:
-            pagination_clause = 'where id >= %s'
-            pagination_values = [next_id]
+            pagination_clause = 'where id >= :next_id'
+            pagination_values = [{'next_id': next_id}]
 
         sql_query = f'''
             select id, {self.get_select_clause()}
