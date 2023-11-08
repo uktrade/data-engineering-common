@@ -8,7 +8,7 @@ from io import StringIO
 import pandas as pd
 import sqlalchemy
 from flask import current_app as flask_app
-from sqlalchemy import DDL
+from sqlalchemy import DDL, text
 from sqlalchemy_utils import functions as sa_functions
 
 TableID = namedtuple('TableID', 'schema table')
@@ -91,7 +91,7 @@ class DBI:
 
     def create_schema(self, name):
         stmt = f'CREATE SCHEMA IF NOT EXISTS "{name}"'
-        self.execute_statement(stmt)
+        self.execute_statement(text(stmt))
 
     def destroy_db(self):
         sa_functions.drop_database(self.db.engine.url)
@@ -130,19 +130,19 @@ class DBI:
 
     def drop_schema(self, name):
         stmt = 'DROP SCHEMA IF EXISTS "{}" CASCADE'.format(name)
-        self.execute_statement(stmt)
+        self.execute_statement(text(stmt))
 
     def drop_table(self, fq_name):
         stmt = 'DROP TABLE IF EXISTS {} CASCADE'.format(fq_name)
-        self.execute_statement(stmt)
+        self.execute_statement(text(stmt))
 
     def drop_materialized_view(self, fq_name):
         stmt = 'DROP MATERIALIZED VIEW IF EXISTS {} CASCADE'.format(fq_name)
-        self.execute_statement(stmt)
+        self.execute_statement(text(stmt))
 
     def drop_sequence(self, fq_name):
         stmt = 'DROP SEQUENCE IF EXISTS {} CASCADE'.format(fq_name)
-        self.execute_statement(stmt)
+        self.execute_statement(text(stmt))
 
     def append_table(self, source_table, target_table, drop_source=True):
         stmt = f"""
@@ -150,12 +150,12 @@ class DBI:
                  SELECT * FROM {source_table}
                );
            """
-        self.execute_statement(stmt)
+        self.execute_statement(text(stmt))
         if drop_source:
             self.drop_table(source_table)
 
     def execute_query(self, query, data=None, df=False, raise_if_fail=False):
-        result_set = self.execute_statement(query, data, raise_if_fail)
+        result_set = self.execute_statement(text(query), data, raise_if_fail)
         rows = result_set.fetchall()
         if df:
             return pd.DataFrame(rows, columns=result_set.keys())
@@ -193,13 +193,13 @@ class DBI:
                 END LOOP;
             END $$;
         """
-        self.execute_statement(stmt)
+        self.execute_statement(text(stmt))
 
     def create_index(self, index, table_name, index_name=None):
         index_name = index_name if index_name else '{}_index'.format(table_name)
         index_str = '(' + ','.join(index) + ')'
         sql = f'create index if not exists {index_name} on {table_name} {index_str}'
-        self.execute_statement(sql, data=index)
+        self.execute_statement(text(sql), data=index)
 
     def insert_data(self, df, table_name):
         if len(df):
@@ -211,7 +211,7 @@ class DBI:
             for col in df.columns:
                 if df[col].dtype == '<M8[ns]':
                     df[col] = df[col].map(lambda x: None if pd.isnull(x) else x.isoformat())
-            self.execute_statement(sql, df.values.tolist(), raise_if_fail=True)
+            self.execute_statement(text(sql), df.values.tolist(), raise_if_fail=True)
 
     def schema_exists(self, name):
         stmt = f"""
@@ -219,7 +219,7 @@ class DBI:
           FROM information_schema.schemata
           WHERE schema_name = '{name}'
         """
-        res = self.execute_statement(stmt)
+        res = self.execute_statement(text(stmt))
         rows = res.fetchall()
         return len(rows) > 0
 
@@ -279,7 +279,7 @@ class DBI:
                 alter index "{schema}"."{index[0]}"
                 rename to "{index[0].replace(table_name, new_table_name)}";
             """
-            self.execute_statement(stmt)
+            self.execute_statement(text(stmt))
         stmt = f"""
             SELECT relname FROM pg_class c
             join pg_namespace nsp on nsp.oid = c.relnamespace
@@ -292,11 +292,11 @@ class DBI:
                 alter sequence "{schema}"."{sequences[0][0]}"
                 rename to "{sequences[0][0].replace(table_name, new_table_name)}";
             """
-            self.execute_statement(stmt)
+            self.execute_statement(text(stmt))
         stmt = f"""
             alter table "{schema}"."{table_name}" rename to "{new_table_name}";
         """
-        self.execute_statement(stmt)
+        self.execute_statement(text(stmt))
 
     def table_exists(self, schema, table_name, materialized_view=False):
         query = f"""
