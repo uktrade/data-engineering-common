@@ -62,7 +62,7 @@ def json_error(f):
         except Unauthorized:
             response = make_response('', 401)
         except Exception as e:
-            flask_app.logger.error(f'unexpected exception for API request: {str(e)}')
+            flask_app.logger.exception(f'unexpected exception for API request: {str(e)}')
             response = make_response('', 500)
         return response
 
